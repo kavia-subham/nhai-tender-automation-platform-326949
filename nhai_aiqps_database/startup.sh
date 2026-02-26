@@ -148,6 +148,16 @@ echo "User: ${DB_USER}"
 echo "Port: ${DB_PORT}"
 echo ""
 
+# Run DB migrations + seed (idempotent) after ensuring db_connection.txt exists.
+# This is the canonical initialization flow for schema setup in this container.
+if [ -f "./migrate.sh" ]; then
+    echo "Running migrations/seed..."
+    chmod +x ./migrate.sh || true
+    ./migrate.sh up
+else
+    echo "WARN: migrate.sh not found; skipping schema migrations/seed."
+fi
+
 echo "Environment variables saved to db_visualizer/postgres.env"
 echo "To use with Node.js viewer, run: source db_visualizer/postgres.env"
 
